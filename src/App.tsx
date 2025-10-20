@@ -1,11 +1,13 @@
 import React from 'react';
-import './App.css';
-import MarkdownRenderer from './MarkdownRenderer';
+import StreamingSlides from './StreamingSlides';
+
+// import SelfMarkdown from './selfMarkdown';
 
 function App() {
   return (
     <div className="App">
-      <MarkdownRenderer />
+      <StreamingSlides />
+      {/* <SelfMarkdown content={''} /> */}
     </div>
   );
 }
