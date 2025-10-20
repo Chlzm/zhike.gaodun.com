@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown 幻灯片演示</title>
+    <link rel="stylesheet" href="https://unpkg.com/reveal.js@4.5.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://unpkg.com/reveal.js@4.5.0/dist/theme/black.css">
+    <style>
+        .reveal h1 { font-size: 2.5em; }
+        .reveal h2 { font-size: 2em; }
+        .reveal p { font-size: 1.2em; }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <!-- Markdown 幻灯片内容 -->
+            <section data-markdown>
+                <textarea data-template>
+                    # 欢迎使用 Markdown 幻灯片
+                    
+                    这是第一页幻灯片
+                    
+                    ---
+                    
+                    ## 第二页：功能介绍
+                    
+                    - 支持 Markdown 语法
+                    - 使用 `---` 分隔幻灯片
+                    - 使用 `--` 创建垂直幻灯片
+                    
+                    ---
+                    
+                    ## 第三页：代码示例
+                    
+                    ```javascript
+                    function hello() {
+                        console.log('Hello, World!');
+                    }
+                    ```
+                    
+                    ---
+                    
+                    ## 第四页：列表展示
+                    
+                    1. 第一项
+                    2. 第二项
+                    3. 第三项
+                    
+                    Note: 这是演讲者备注
+                    
+                    ---
+                    
+                    ## 第五页：引用文本
+                    
+                    > 这是一段引用文本  
+                    > 可以展示重要信息
+                    
+                    ---
+                    
+                    ### 垂直幻灯片示例
+                    
+                    向下滑动查看更多
+                    
+                    --
+                    
+                    #### 这是垂直的第二页
+                    
+                    使用 `--` 创建垂直幻灯片
+                    
+                    --
+                    
+                    #### 这是垂直的第三页
+                    
+                    按方向键导航
+                    
+                    ---
+                    
+                    ## 谢谢观看！
+                    
+                    **按空格键** 继续浏览
+                </textarea>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/reveal.js@4.5.0/dist/reveal.js"></script>
+    <script src="https://unpkg.com/reveal.js@4.5.0/plugin/markdown/markdown.js"></script>
+    <script src="https://unpkg.com/reveal.js@4.5.0/plugin/highlight/highlight.js"></script>
+    <script src="https://unpkg.com/reveal.js@4.5.0/plugin/notes/notes.js"></script>
+    
+    <script>
+        Reveal.initialize({
+            plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ],
+            // 配置选项
+            hash: true,
+            transition: 'slide', // none/fade/slide/convex/concave/zoom
+            slideNumber: true,
+            center: true,
+            controls: true,
+            progress: true
+        });
+    </script>
+</body>
+</html>

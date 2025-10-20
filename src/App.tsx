@@ -1,13 +1,8 @@
 import React from 'react';
-import './App.css';
-import MarkdownRenderer from './MarkdownRenderer';
+import StreamMarkdown from './streamMarkdown';
 
 function App() {
-  return (
-    <div className="App">
-      我是首页
-    </div>
-  );
+  return <StreamMarkdown />;
 }
 
 export default App;
