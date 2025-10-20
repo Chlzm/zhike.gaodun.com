@@ -5,7 +5,7 @@ import MarkdownRenderer from './MarkdownRenderer';
 function App() {
   return (
     <div className="App">
-      <MarkdownRenderer />
+      我是首页
     </div>
   );
 }
