@@ -82,7 +82,7 @@ Note: 这是演讲者备注
     const initMarkdown = () => {
         console.log('开始初始化 Reveal.js...');
         console.log('MD 内容:', md);
-        console.log('MD 内容长度:', md.length1);
+        console.log('MD 内容长度:', md.length);
         
         // 检查 Reveal 是否已加载
         if (typeof window.Reveal === 'undefined') {
