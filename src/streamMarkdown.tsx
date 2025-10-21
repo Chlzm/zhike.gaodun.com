@@ -19,68 +19,7 @@ declare global {
 }
 
 const StreamMarkdown = () => {
-    const [md, setMD] = useState(`# 欢迎使用 Markdown 幻灯片
-
-这是第一页幻灯片
-
----
-
-## 第二页：功能介绍
-
-- 支持 Markdown 语法
-- 使用 \`---\` 分隔幻灯片
-- 使用 \`--\` 创建垂直幻灯片
-
----
-
-## 第三页：代码示例
-
-\`\`\`javascript
-function hello() {
-    console.log('Hello, World!');
-}
-\`\`\`
-
----
-
-## 第四页：列表展示
-
-1. 第一项
-2. 第二项
-3. 第三项
-
-Note: 这是演讲者备注
-
----
-
-## 第五页：引用文本
-
-> 这是一段引用文本  
-> 可以展示重要信息
-
----
-
-### 垂直幻灯片示例
-
-向下滑动查看更多
-
---
-
-#### 这是垂直的第二页
-
-使用 \`--\` 创建垂直幻灯片
-
---
-
-#### 这是垂直的第三页
-
-按方向键导航
-
----
-
-## 谢谢观看！！！
-
-**按空格键** 继续浏览`);
+    const [md, setMD] = useState(``);
 
     const revealRef = useRef(null);
     const slidesRef = useRef(null);
@@ -96,11 +35,11 @@ Note: 这是演讲者备注
         const response = await fetch('https://api.coze.cn/v1/workflow/stream_run', {
             method: 'POST',
             headers: {
-                'Authorization': 'Bearer pat_QnEa51egJFxTcB9YLFLj0v7wKFVwoPx2WfZlLW8ObZ3q5MVIWEmlObblPfmcXIwK',
+                'Authorization': 'Bearer cztei_hi7SIThqHXGrOMrVkaThpzGlx5pkIr84p6LCVGrc67T9fof8hZ0Mnpjp5syZJJtyU',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                workflow_id: '7560573153358561280',
+                workflow_id: '7563578510242562100',
                 parameters: {
                     input: '介绍上海'
                 }
