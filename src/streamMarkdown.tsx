@@ -156,7 +156,7 @@ Note: 这是演讲者备注
             // 限制更新频率，避免过度渲染
             const now = Date.now();
             if (now - lastUpdateTime > 500) {  // 提高频率限制，减少重渲染
-                initMarkdown(accumulated);
+                updateMarkdownContent(accumulated);
                 lastUpdateTime = now;
             }
         }
@@ -165,6 +165,33 @@ Note: 这是演讲者备注
         initMarkdown(accumulated);
         setMD(accumulated);
         console.log('Final markdown:', accumulated);
+    };
+
+    // 流式更新 Markdown 内容（不重新初始化）
+    const updateMarkdownContent = (content: string) => {
+        if (!isInitialized || !window.Reveal) {
+            // 如果还未初始化，则执行初始化
+            initMarkdown(content);
+            return;
+        }
+
+        try {
+            // 只更新 textarea 的内容
+            const textarea = slidesRef.current?.querySelector('textarea[data-template]');
+            if (textarea) {
+                textarea.textContent = content;
+                
+                // 调用 Reveal.sync() 重新解析 Markdown 并更新幻灯片
+                window.Reveal.sync();
+                
+                // 更新目录（因为内容可能改变）
+                generateTOC();
+                
+                console.log('Markdown 内容已更新，长度:', content.length);
+            }
+        } catch (error) {
+            console.error('更新 Markdown 内容失败:', error);
+        }
     };
 
     const initMarkdown = (initMd: string) => {
