@@ -20,20 +20,37 @@ declare global {
 
 const StreamMarkdown = () => {
     // 默认的本地 Markdown 内容
-    const defaultMarkdown = `# 魔都上海：魅力之城的多面画卷
+    const defaultMarkdown = `### 魔都风采
 
-## 繁华都市的天际线
-上海，作为中国最具国际化的大都市之一，其天际线是这座城市繁华的象征。林立的高楼大厦，如东方明珠广播电视塔、上海中心大厦等，构成了独特而壮观的城市轮廓。每当夜幕降临，灯光亮起，整个城市仿佛变成了一个璀璨的星河，展现出无与伦比的现代都市魅力。
+上海，这座充满魅力的国际化大都市，宛如一颗璀璨的东方明珠，闪耀在世界的舞台上。它是繁华与现代的象征，高楼大厦林立，车水马龙，展现出无尽的活力与机遇。外滩的万国建筑见证了历史的沧桑变迁，浦东的摩天大楼则代表着未来的无限可能。在这里，传统与现代完美融合，古老的弄堂与时尚的购物中心相邻而居，让人感受到独特的文化氛围。
+![The image](https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/3965ea4b25274f049df6d48fbcb4d965.png)
 ---
-![上海天际线](https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/b7f5c3b0855b454c8e990822c454aad0.png)
 
-## 历史韵味的弄堂
-在上海的繁华背后，隐藏着许多充满历史韵味的弄堂。这些弄堂见证了上海的变迁，是老上海生活的缩影。狭窄的街道，石库门建筑，邻里之间的欢声笑语，都让人感受到一种浓浓的生活气息。漫步在弄堂里，仿佛时光倒流，能领略到上海独特的历史文化底蕴。
+### 文化盛宴
+
+上海不仅是经济的中心，也是文化的摇篮。这里汇聚了来自世界各地的艺术、音乐、戏剧和电影。上海博物馆珍藏着无数的历史文物，让人们领略到中华文化的博大精深；上海大剧院则经常上演世界级的歌剧、芭蕾舞和音乐会，为观众带来一场场视听盛宴。此外，上海还有许多创意园区和艺术街区，如田子坊和M50，充满了艺术气息和创意灵感。
+![The image](https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/0cbbfb20a54748329257cd2bc48838b4.png)
 ---
-![上海弄堂](https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/46a9c9f1501f464ab95bac9af8fcc5a4.png)
 
-## 时尚潮流的购物天堂
-上海是时尚潮流的聚集地，拥有众多知名的购物商圈，如南京路步行街、淮海路等。这里汇聚了世界各地的品牌，从高端奢侈品到时尚潮牌，应有尽有。无论是购物爱好者还是时尚达人，都能在这里找到满足自己需求的商品。同时，购物商圈周边的餐厅、咖啡馆等配套设施也十分完善，让人们在购物之余还能享受美食和休闲时光。`;
+### 美食天堂
+
+上海的美食文化丰富多样，融合了各地的特色风味。从传统的本帮菜到国际化的美食，应有尽有。生煎包、小笼包、蟹壳黄等特色小吃让人垂涎欲滴；而在高级餐厅里，你可以品尝到精致的法式大餐、正宗的意大利披萨和美味的日本料理。此外，上海的夜市也是美食爱好者的天堂，各种小吃摊位琳琅满目，让你在品尝美食的同时，感受这座城市的热闹与烟火气。
+很遗憾，由于调用图片生成的QPS限制，暂时无法为你生成“上海夜市，各种美食摊位热闹非凡”的图片。你可以稍后再尝试让我生成这张图片。
+
+---
+
+### 购物之都
+
+上海是购物的天堂，拥有众多大型购物中心和商业街。南京路步行街是上海最著名的商业街之一，这里汇聚了各种国内外知名品牌，是购物和休闲的好去处。淮海路则以时尚和高端著称，有许多设计师品牌和精品店。此外，上海还有许多特色的购物街区，如豫园商城，你可以在这里购买到传统的手工艺品和纪念品。
+![The image](https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/fddc3f2a08dd4f9e90fd0273632af96a.png)
+---
+
+### 休闲胜地
+
+上海有许多美丽的公园和休闲场所，为人们提供了放松身心的好去处。世纪公园是上海最大的城市公园之一，这里绿树成荫，湖水清澈，是散步、跑步和野餐的好地方。此外，上海还有许多历史悠久的园林，如豫园，园内亭台楼阁、假山池沼，充满了江南水乡的韵味。
+![The image](https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/f45f8ec9387a4500b5d253ded75b975f.png)
+`;
+
 
     const [md, setMD] = useState(defaultMarkdown);
 
@@ -54,7 +71,7 @@ const StreamMarkdown = () => {
         const response = await fetch('https://api.coze.cn/v1/workflow/stream_run', {
             method: 'POST',
             headers: {
-                'Authorization': 'Bearer cztei_hi7SIThqHXGrOMrVkaThpzGlx5pkIr84p6LCVGrc67T9fof8hZ0Mnpjp5syZJJtyU',
+                'Authorization': 'Bearer pat_a4hWiMSUqrWQFe8bEuJRYIforSx78ahLdLMpTCl9G8KfZ3qg9WkGt8M8xNlG713I',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
