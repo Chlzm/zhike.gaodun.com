@@ -19,7 +19,23 @@ declare global {
 }
 
 const StreamMarkdown = () => {
-    const [md, setMD] = useState(``);
+    // 默认的本地 Markdown 内容
+    const defaultMarkdown = `# 魔都上海：魅力之城的多面画卷
+
+## 繁华都市的天际线
+上海，作为中国最具国际化的大都市之一，其天际线是这座城市繁华的象征。林立的高楼大厦，如东方明珠广播电视塔、上海中心大厦等，构成了独特而壮观的城市轮廓。每当夜幕降临，灯光亮起，整个城市仿佛变成了一个璀璨的星河，展现出无与伦比的现代都市魅力。
+---
+![上海天际线](https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/b7f5c3b0855b454c8e990822c454aad0.png)
+
+## 历史韵味的弄堂
+在上海的繁华背后，隐藏着许多充满历史韵味的弄堂。这些弄堂见证了上海的变迁，是老上海生活的缩影。狭窄的街道，石库门建筑，邻里之间的欢声笑语，都让人感受到一种浓浓的生活气息。漫步在弄堂里，仿佛时光倒流，能领略到上海独特的历史文化底蕴。
+---
+![上海弄堂](https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/46a9c9f1501f464ab95bac9af8fcc5a4.png)
+
+## 时尚潮流的购物天堂
+上海是时尚潮流的聚集地，拥有众多知名的购物商圈，如南京路步行街、淮海路等。这里汇聚了世界各地的品牌，从高端奢侈品到时尚潮牌，应有尽有。无论是购物爱好者还是时尚达人，都能在这里找到满足自己需求的商品。同时，购物商圈周边的餐厅、咖啡馆等配套设施也十分完善，让人们在购物之余还能享受美食和休闲时光。`;
+
+    const [md, setMD] = useState(defaultMarkdown);
 
     const revealRef = useRef(null);
     const slidesRef = useRef(null);
@@ -29,6 +45,9 @@ const StreamMarkdown = () => {
     const [activeSlide, setActiveSlide] = useState({ h: 0, v: 0 });
     const [showEditor, setShowEditor] = useState(false);
     const [editingMd, setEditingMd] = useState(md);
+    const [useAPI, setUseAPI] = useState(() => {
+        return localStorage.getItem('useStreamingAPI') === 'true';
+    });
 
     // 流式调用
     const callRealStreamingAPI = async () => {
@@ -240,9 +259,29 @@ const StreamMarkdown = () => {
         }
     };
 
+    // 切换数据源
+    const toggleDataSource = () => {
+        const newUseAPI = !useAPI;
+        setUseAPI(newUseAPI);
+        localStorage.setItem('useStreamingAPI', String(newUseAPI));
+        
+        // 切换后立即加载对应的内容
+        if (newUseAPI) {
+            callRealStreamingAPI();
+        } else {
+            initMarkdown(defaultMarkdown);
+        }
+    };
+
     // 自动初始化
     useEffect(() => {
-        callRealStreamingAPI();
+        if (useAPI) {
+            // 使用流式接口
+            callRealStreamingAPI();
+        } else {
+            // 使用本地默认内容
+            initMarkdown(defaultMarkdown);
+        }
     }, []);
 
     // 应用编辑的内容
@@ -432,6 +471,20 @@ const StreamMarkdown = () => {
                 display: 'flex',
                 gap: '10px'
             }}>
+                <button
+                    onClick={toggleDataSource}
+                    style={{
+                        padding: '10px 20px',
+                        backgroundColor: useAPI ? '#4caf50' : '#2196f3',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer',
+                        fontSize: '14px'
+                    }}
+                >
+                    {useAPI ? '🌐 接口模式' : '📄 本地模式'}
+                </button>
                 <button
                     onClick={() => {
                         setEditingMd(md);
