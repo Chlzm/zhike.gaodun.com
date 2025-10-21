@@ -6,17 +6,93 @@
     <title>Markdown 幻灯片演示</title>
     <link rel="stylesheet" href="https://unpkg.com/reveal.js@4.5.0/dist/reveal.css">
     <link rel="stylesheet" href="https://unpkg.com/reveal.js@4.5.0/dist/theme/black.css">
-     <script src="https://unpkg.com/reveal.js@4.5.0/dist/reveal.js"></script>
-    <script src="https://unpkg.com/reveal.js@4.5.0/plugin/markdown/markdown.js"></script>
-    <script src="https://unpkg.com/reveal.js@4.5.0/plugin/highlight/highlight.js"></script>
-    <script src="https://unpkg.com/reveal.js@4.5.0/plugin/notes/notes.js"></script>
     <style>
         .reveal h1 { font-size: 2.5em; }
         .reveal h2 { font-size: 2em; }
         .reveal p { font-size: 1.2em; }
+        
+        /* 目录样式 */
+        #toc-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        #toc-toggle {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        #toc-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        #toc-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid white;
+            border-radius: 5px;
+            padding: 15px;
+            min-width: 250px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        #toc-menu.show {
+            display: block;
+        }
+        
+        #toc-menu h3 {
+            margin: 0 0 10px 0;
+            color: white;
+            font-size: 18px;
+            border-bottom: 1px solid white;
+            padding-bottom: 5px;
+        }
+        
+        .toc-item {
+            padding: 8px 10px;
+            margin: 5px 0;
+            cursor: pointer;
+            color: white;
+            border-radius: 3px;
+            transition: background 0.3s;
+        }
+        
+        .toc-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .toc-item.active {
+            background: rgba(66, 175, 250, 0.5);
+        }
+        
+        .toc-item-vertical {
+            margin-left: 20px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
     </style>
 </head>
 <body>
+    <!-- 目录容器 -->
+    <div id="toc-container">
+        <button id="toc-toggle">📑 目录</button>
+        <div id="toc-menu">
+            <h3>幻灯片目录</h3>
+            <div id="toc-list"></div>
+        </div>
+    </div>
+
     <div class="reveal">
         <div class="slides">
             <!-- Markdown 幻灯片内容 -->
@@ -89,18 +165,101 @@
         </div>
     </div>
 
-   
+    <script src="https://unpkg.com/reveal.js@4.5.0/dist/reveal.js"></script>
+    <script src="https://unpkg.com/reveal.js@4.5.0/plugin/markdown/markdown.js"></script>
+    <script src="https://unpkg.com/reveal.js@4.5.0/plugin/highlight/highlight.js"></script>
+    <script src="https://unpkg.com/reveal.js@4.5.0/plugin/notes/notes.js"></script>
     
     <script>
         Reveal.initialize({
             plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ],
             // 配置选项
             hash: true,
-            transition: 'slide', // none/fade/slide/convex/concave/zoom
+            transition: 'slide',
             slideNumber: true,
             center: true,
             controls: true,
             progress: true
+        }).then(() => {
+            // 生成目录
+            generateTOC();
+            
+            // 监听幻灯片切换事件，更新当前激活项
+            Reveal.on('slidechanged', updateActiveTOC);
+        });
+
+        // 生成目录函数
+        function generateTOC() {
+            const slides = Reveal.getSlides();
+            const tocList = document.getElementById('toc-list');
+            tocList.innerHTML = '';
+            
+            slides.forEach((slide, index) => {
+                const indices = Reveal.getIndices(slide);
+                const h = indices.h;
+                const v = indices.v;
+                
+                // 提取标题
+                let title = '';
+                const h1 = slide.querySelector('h1');
+                const h2 = slide.querySelector('h2');
+                const h3 = slide.querySelector('h3');
+                const h4 = slide.querySelector('h4');
+                
+                if (h1) title = h1.textContent;
+                else if (h2) title = h2.textContent;
+                else if (h3) title = h3.textContent;
+                else if (h4) title = h4.textContent;
+                else title = `幻灯片 ${h + 1}${v > 0 ? '.' + (v + 1) : ''}`;
+                
+                // 创建目录项
+                const tocItem = document.createElement('div');
+                tocItem.className = 'toc-item' + (v > 0 ? ' toc-item-vertical' : '');
+                tocItem.textContent = title;
+                tocItem.dataset.h = h;
+                tocItem.dataset.v = v;
+                
+                // 点击跳转
+                tocItem.addEventListener('click', () => {
+                    Reveal.slide(h, v);
+                    document.getElementById('toc-menu').classList.remove('show');
+                });
+                
+                tocList.appendChild(tocItem);
+            });
+            
+            // 初始化当前激活项
+            updateActiveTOC();
+        }
+        
+        // 更新当前激活的目录项
+        function updateActiveTOC() {
+            const indices = Reveal.getIndices();
+            const tocItems = document.querySelectorAll('.toc-item');
+            
+            tocItems.forEach(item => {
+                const h = parseInt(item.dataset.h);
+                const v = parseInt(item.dataset.v);
+                
+                if (h === indices.h && v === indices.v) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+        
+        // 目录开关
+        document.getElementById('toc-toggle').addEventListener('click', () => {
+            document.getElementById('toc-menu').classList.toggle('show');
+        });
+        
+        // 点击外部关闭目录
+        document.addEventListener('click', (e) => {
+            const container = document.getElementById('toc-container');
+            if (!container.contains(e.target)) {
+                document.getElementById('toc-menu').classList.remove('show');
+            }
         });
     </script>
 </body>
