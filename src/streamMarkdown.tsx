@@ -54,7 +54,7 @@ const StreamMarkdown = () => {
         const response = await fetch('https://api.coze.cn/v1/workflow/stream_run', {
             method: 'POST',
             headers: {
-                'Authorization': 'Bearer cztei_hi7SIThqHXGrOMrVkaThpzGlx5pkIr84p6LCVGrc67T9fof8hZ0Mnpjp5syZJJtyU',
+                'Authorization': 'Bearer pat_a4hWiMSUqrWQFe8bEuJRYIforSx78ahLdLMpTCl9G8KfZ3qg9WkGt8M8xNlG713I',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
