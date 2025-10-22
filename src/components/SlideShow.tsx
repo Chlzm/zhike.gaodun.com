@@ -6,6 +6,7 @@ interface TOCItem {
     h: number;
     v: number;
     isVertical: boolean;
+    imageUrl?: string; // 幻灯片的缩略图URL
 }
 
 // 声明全局变量类型
@@ -170,10 +171,6 @@ const StreamMarkdown = () => {
     };
 
     const initMarkdown = (initMd: string) => {
-        console.log('开始初始化 Reveal.js...');
-        console.log('MD 内容:', initMd);
-        console.log('MD 内容长度:', initMd.length);
-
         // 检查 Reveal 是否已加载
         if (typeof window.Reveal === 'undefined') {
             console.error('Reveal.js 未加载');
@@ -204,9 +201,14 @@ const StreamMarkdown = () => {
                 hash: true,
                 transition: 'slide',
                 slideNumber: true,
-                center: true,
+                center: false, // 禁用垂直居中,避免内容超出
                 controls: true,
                 progress: true,
+                width: '100%',
+                height: '100%',
+                margin: 0.04,
+                minScale: 0.2,
+                maxScale: 2.0,
                 markdown: {
                     smartypants: true
                 }
@@ -257,11 +259,19 @@ const StreamMarkdown = () => {
             else if (h4) title = h4.textContent || '';
             else title = `幻灯片 ${h + 1}${v > 0 ? '.' + (v + 1) : ''}`;
 
+            // 提取第一张图片作为缩略图
+            let imageUrl = '';
+            const img = slide.querySelector('img');
+            if (img) {
+                imageUrl = img.src || '';
+            }
+
             items.push({
                 title,
                 h,
                 v,
-                isVertical: v > 0
+                isVertical: v > 0,
+                imageUrl
             });
         });
 
@@ -289,6 +299,81 @@ const StreamMarkdown = () => {
             initMarkdown(defaultMarkdown);
         }
     };
+
+    // 注入自定义样式
+    useEffect(() => {
+        const style = document.createElement('style');
+        style.textContent = `
+            /* 防止内容超出 */
+            .reveal .slides section {
+                width: 100%;
+                height: 100%;
+                overflow: auto !important;
+                max-height: 100vh !important;
+                padding: 20px !important;
+                box-sizing: border-box !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                align-items: center !important;
+                text-align: center !important;
+            }
+            
+            /* 控制字体大小 - 更紧凑的布局 */
+            .reveal .slides section h1 {
+                font-size: 1.8em !important;
+                margin-bottom: 0.3em !important;
+            }
+            
+            .reveal .slides section h2 {
+                font-size: 1.5em !important;
+                margin-bottom: 0.3em !important;
+            }
+            
+            .reveal .slides section h3 {
+                font-size: 1.2em !important;
+                margin-bottom: 0.25em !important;
+            }
+            
+            .reveal .slides section p {
+                font-size: 0.85em !important;
+                line-height: 1.4 !important;
+                margin-bottom: 0.5em !important;
+            }
+            
+            /* 控制图片大小 - 更紧凑 */
+            .reveal .slides section img {
+                max-width: 70% !important;
+                max-height: 35vh !important;
+                object-fit: contain !important;
+                margin: 8px auto !important;
+                display: block !important;
+            }
+            
+            /* 自定义滚动条样式 */
+            .reveal .slides section::-webkit-scrollbar {
+                width: 8px;
+            }
+            
+            .reveal .slides section::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.1);
+            }
+            
+            .reveal .slides section::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 4px;
+            }
+            
+            .reveal .slides section::-webkit-scrollbar-thumb:hover {
+                background: rgba(255, 255, 255, 0.5);
+            }
+        `;
+        document.head.appendChild(style);
+        
+        return () => {
+            document.head.removeChild(style);
+        };
+    }, []);
 
     // 自动初始化
     useEffect(() => {
@@ -386,54 +471,18 @@ const StreamMarkdown = () => {
                 </div>
             )}
 
-            {/* 目录容器 */}
-            <div style={{
-                position: 'fixed',
-                top: '20px',
-                right: '20px',
-                zIndex: 1000
-            }}>
+            {/* 左上角目录按钮 */}
+            <div className="slideshow__toc-wrapper">
                 <button
                     onClick={() => setShowToc(!showToc)}
-                    style={{
-                        background: 'rgba(0, 0, 0, 0.8)',
-                        color: 'white',
-                        border: '2px solid white',
-                        padding: '10px 15px',
-                        cursor: 'pointer',
-                        borderRadius: '5px',
-                        fontSize: '16px'
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'rgba(0, 0, 0, 0.8)';
-                    }}
+                    className="slideshow__toc-button"
                 >
                     📑 目录
                 </button>
 
                 {showToc && (
-                    <div style={{
-                        position: 'absolute',
-                        top: '50px',
-                        right: '0',
-                        background: 'rgba(0, 0, 0, 0.95)',
-                        border: '2px solid white',
-                        borderRadius: '5px',
-                        padding: '15px',
-                        minWidth: '250px',
-                        maxHeight: '400px',
-                        overflowY: 'auto'
-                    }}>
-                        <h3 style={{
-                            margin: '0 0 10px 0',
-                            color: 'white',
-                            fontSize: '18px',
-                            borderBottom: '1px solid white',
-                            paddingBottom: '5px'
-                        }}>
+                    <div className="toc-container slideshow__toc-container">
+                        <h3 className="slideshow__toc-title">
                             幻灯片目录
                         </h3>
 
@@ -441,32 +490,20 @@ const StreamMarkdown = () => {
                             <div
                                 key={index}
                                 onClick={() => goToSlide(item.h, item.v)}
-                                style={{
-                                    padding: '8px 10px',
-                                    margin: '5px 0',
-                                    cursor: 'pointer',
-                                    color: 'white',
-                                    borderRadius: '3px',
-                                    transition: 'background 0.3s',
-                                    marginLeft: item.isVertical ? '20px' : '0',
-                                    fontSize: item.isVertical ? '14px' : '16px',
-                                    opacity: item.isVertical ? 0.8 : 1,
-                                    background: (activeSlide.h === item.h && activeSlide.v === item.v)
-                                        ? 'rgba(66, 175, 250, 0.5)'
-                                        : 'transparent'
-                                }}
-                                onMouseEnter={(e) => {
-                                    if (activeSlide.h !== item.h || activeSlide.v !== item.v) {
-                                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-                                    }
-                                }}
-                                onMouseLeave={(e) => {
-                                    if (activeSlide.h !== item.h || activeSlide.v !== item.v) {
-                                        e.currentTarget.style.background = 'transparent';
-                                    }
-                                }}
+                                className={`slideshow__toc-item ${
+                                    item.isVertical ? 'slideshow__toc-item--vertical' : ''
+                                } ${
+                                    activeSlide.h === item.h && activeSlide.v === item.v ? 'slideshow__toc-item--active' : ''
+                                }`}
                             >
-                                {item.title}
+                                {item.imageUrl && (
+                                    <img
+                                        src={item.imageUrl}
+                                        alt={item.title}
+                                        className="slideshow__toc-item-image"
+                                    />
+                                )}
+                                <span className="slideshow__toc-item-title">{item.title}</span>
                             </div>
                         ))}
                     </div>
@@ -480,25 +517,12 @@ const StreamMarkdown = () => {
             </div>
 
             {/* 控制按钮组 */}
-            <div style={{
-                position: 'fixed',
-                top: '10px',
-                left: '10px',
-                zIndex: 1000,
-                display: 'flex',
-                gap: '10px'
-            }}>
+            <div className="slideshow__controls">
                 <button
                     onClick={toggleDataSource}
-                    style={{
-                        padding: '10px 20px',
-                        backgroundColor: useAPI ? '#4caf50' : '#2196f3',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '5px',
-                        cursor: 'pointer',
-                        fontSize: '14px'
-                    }}
+                    className={`slideshow__control-button ${
+                        useAPI ? 'slideshow__control-button--api' : 'slideshow__control-button--local'
+                    }`}
                 >
                     {useAPI ? '🌐 接口模式' : '📄 本地模式'}
                 </button>
@@ -507,50 +531,18 @@ const StreamMarkdown = () => {
                         setEditingMd(md);
                         setShowEditor(true);
                     }}
-                    style={{
-                        padding: '10px 20px',
-                        backgroundColor: '#ff9800',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '5px',
-                        cursor: 'pointer',
-                        fontSize: '14px'
-                    }}
+                    className="slideshow__control-button slideshow__control-button--edit"
                 >
                     ✏️ 编辑 Markdown
                 </button>
                 <button
-                    onClick={initMarkdown}
-                    style={{
-                        padding: '10px 20px',
-                        backgroundColor: '#007acc',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '5px',
-                        cursor: 'pointer',
-                        fontSize: '14px'
+                    onClick={() => {
+                        window.print();
                     }}
+                    className="slideshow__control-button slideshow__control-button--pdf"
                 >
-                    {isInitialized ? '🔄 重新渲染' : '▶️ 渲染'}
+                    📄 导出 PDF
                 </button>
-            </div>
-
-            {/* 调试信息 */}
-            <div style={{
-                position: 'fixed',
-                bottom: '10px',
-                left: '10px',
-                background: 'rgba(0,0,0,0.8)',
-                color: 'white',
-                padding: '10px',
-                fontSize: '12px',
-                borderRadius: '5px',
-                zIndex: 1000
-            }}>
-                状态: {isInitialized ? '已初始化' : '未初始化'}<br />
-                Reveal.js: {typeof window.Reveal !== 'undefined' ? '已加载' : '未加载'}<br />
-                内容长度: {md.length} 字符<br />
-                目录项: {tocItems.length} 个
             </div>
         </>
     );
