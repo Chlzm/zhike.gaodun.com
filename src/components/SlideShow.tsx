@@ -9,6 +9,10 @@ interface TOCItem {
     imageUrl?: string; // 幻灯片的缩略图URL
 }
 
+interface SlideShowProps {
+    outline?: string; // 从OutlineStream传入的大纲内容
+}
+
 // 声明全局变量类型
 declare global {
     interface Window {
@@ -19,7 +23,7 @@ declare global {
     }
 }
 
-const StreamMarkdown = () => {
+const StreamMarkdown = ({ outline }: SlideShowProps) => {
     // 默认的本地 Markdown 内容
     const defaultMarkdown = `### 魔都风采
 
@@ -53,7 +57,7 @@ const StreamMarkdown = () => {
 `;
 
 
-    const [md, setMD] = useState(defaultMarkdown);
+    const [md, setMD] = useState(outline || defaultMarkdown);
 
     const revealRef = useRef(null);
     const slidesRef = useRef(null);
