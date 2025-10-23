@@ -24,40 +24,7 @@ declare global {
 }
 
 const StreamMarkdown = ({ outline }: SlideShowProps) => {
-    // 默认的本地 Markdown 内容
-    const defaultMarkdown = `### 魔都风采
-
-上海，这座充满魅力的国际化大都市，宛如一颗璀璨的东方明珠，闪耀在世界的舞台上。它是繁华与现代的象征，高楼大厦林立，车水马龙，展现出无尽的活力与机遇。外滩的万国建筑见证了历史的沧桑变迁，浦东的摩天大楼则代表着未来的无限可能。在这里，传统与现代完美融合，古老的弄堂与时尚的购物中心相邻而居，让人感受到独特的文化氛围。
-![The image](https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/3965ea4b25274f049df6d48fbcb4d965.png)
----
-
-### 文化盛宴
-
-上海不仅是经济的中心，也是文化的摇篮。这里汇聚了来自世界各地的艺术、音乐、戏剧和电影。上海博物馆珍藏着无数的历史文物，让人们领略到中华文化的博大精深；上海大剧院则经常上演世界级的歌剧、芭蕾舞和音乐会，为观众带来一场场视听盛宴。此外，上海还有许多创意园区和艺术街区，如田子坊和M50，充满了艺术气息和创意灵感。
-![The image](https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/0cbbfb20a54748329257cd2bc48838b4.png)
----
-
-### 美食天堂
-
-上海的美食文化丰富多样，融合了各地的特色风味。从传统的本帮菜到国际化的美食，应有尽有。生煎包、小笼包、蟹壳黄等特色小吃让人垂涎欲滴；而在高级餐厅里，你可以品尝到精致的法式大餐、正宗的意大利披萨和美味的日本料理。此外，上海的夜市也是美食爱好者的天堂，各种小吃摊位琳琅满目，让你在品尝美食的同时，感受这座城市的热闹与烟火气。
-很遗憾，由于调用图片生成的QPS限制，暂时无法为你生成“上海夜市，各种美食摊位热闹非凡”的图片。你可以稍后再尝试让我生成这张图片。
-
----
-
-### 购物之都
-
-上海是购物的天堂，拥有众多大型购物中心和商业街。南京路步行街是上海最著名的商业街之一，这里汇聚了各种国内外知名品牌，是购物和休闲的好去处。淮海路则以时尚和高端著称，有许多设计师品牌和精品店。此外，上海还有许多特色的购物街区，如豫园商城，你可以在这里购买到传统的手工艺品和纪念品。
-![The image](https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/fddc3f2a08dd4f9e90fd0273632af96a.png)
----
-
-### 休闲胜地
-
-上海有许多美丽的公园和休闲场所，为人们提供了放松身心的好去处。世纪公园是上海最大的城市公园之一，这里绿树成荫，湖水清澈，是散步、跑步和野餐的好地方。此外，上海还有许多历史悠久的园林，如豫园，园内亭台楼阁、假山池沼，充满了江南水乡的韵味。
-![The image](https://lf-bot-studio-plugin-resource.coze.cn/obj/bot-studio-platform-plugin-tos/artist/image/f45f8ec9387a4500b5d253ded75b975f.png)
-`;
-
-
-    const [md, setMD] = useState(outline || defaultMarkdown);
+    const [md, setMD] = useState(outline || '');
 
     const revealRef = useRef(null);
     const slidesRef = useRef(null);
@@ -67,112 +34,6 @@ const StreamMarkdown = ({ outline }: SlideShowProps) => {
     const [activeSlide, setActiveSlide] = useState({ h: 0, v: 0 });
     const [showEditor, setShowEditor] = useState(false);
     const [editingMd, setEditingMd] = useState(md);
-    const [useAPI, setUseAPI] = useState(() => {
-        return localStorage.getItem('useStreamingAPI') === 'true';
-    });
-
-    // 流式调用
-    const callRealStreamingAPI = async () => {
-        const response = await fetch('https://api.coze.cn/v1/workflow/stream_run', {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer pat_a4hWiMSUqrWQFe8bEuJRYIforSx78ahLdLMpTCl9G8KfZ3qg9WkGt8M8xNlG713I',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                workflow_id: '7563578510242562100',
-                parameters: {
-                    input: '介绍上海'
-                }
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const reader = response.body?.getReader();
-        if (!reader) {
-            throw new Error('ReadableStream not supported');
-        }
-
-        const decoder = new TextDecoder('utf-8');
-        let accumulated = ''; // 累积的 Markdown 内容
-        let buffer = '';      // SSE 数据缓冲区
-        let lastUpdateTime = Date.now();
-
-        while (true) {
-            const { done, value } = await reader.read();
-
-            if (done) {
-                console.log('Stream complete');
-                console.log('Final markdown:', accumulated);
-                break;
-            }
-
-            const chunk = decoder.decode(value, { stream: true });
-            buffer += chunk;
-
-            // 按行处理 SSE 数据
-            const lines = buffer.split('\n');
-            buffer = lines.pop() || ''; // 保留最后一行（可能不完整）
-
-            for (const line of lines) {
-                if (line.startsWith('data: ')) {
-                    try {
-                        const jsonStr = line.substring(6); // 去掉 "data: " 前缀
-                        const data = JSON.parse(jsonStr);
-
-                        // 提取 content 字段并累积
-                        if (data.content) {
-                            accumulated += data.content;
-                        }
-                    } catch (e) {
-                        console.warn('Failed to parse SSE data:', line);
-                    }
-                }
-            }
-
-            // 限制更新频率，避免过度渲染
-            const now = Date.now();
-            if (now - lastUpdateTime > 500) {  // 提高频率限制，减少重渲染
-                updateMarkdownContent(accumulated);
-                lastUpdateTime = now;
-            }
-        }
-
-        // 确保最后一次更新
-        initMarkdown(accumulated);
-        setMD(accumulated);
-        console.log('Final markdown:', accumulated);
-    };
-
-    // 流式更新 Markdown 内容（不重新初始化）
-    const updateMarkdownContent = (content: string) => {
-        if (!isInitialized || !window.Reveal) {
-            // 如果还未初始化，则执行初始化
-            initMarkdown(content);
-            return;
-        }
-
-        try {
-            // 只更新 textarea 的内容
-            const textarea = slidesRef.current?.querySelector('textarea[data-template]');
-            if (textarea) {
-                textarea.textContent = content;
-                
-                // 调用 Reveal.sync() 重新解析 Markdown 并更新幻灯片
-                window.Reveal.sync();
-                
-                // 更新目录（因为内容可能改变）
-                generateTOC();
-                
-                console.log('Markdown 内容已更新，长度:', content.length);
-            }
-        } catch (error) {
-            console.error('更新 Markdown 内容失败:', error);
-        }
-    };
 
     const initMarkdown = (initMd: string) => {
         // 检查 Reveal 是否已加载
@@ -290,20 +151,6 @@ const StreamMarkdown = ({ outline }: SlideShowProps) => {
         }
     };
 
-    // 切换数据源
-    const toggleDataSource = () => {
-        const newUseAPI = !useAPI;
-        setUseAPI(newUseAPI);
-        localStorage.setItem('useStreamingAPI', String(newUseAPI));
-        
-        // 切换后立即加载对应的内容
-        if (newUseAPI) {
-            callRealStreamingAPI();
-        } else {
-            initMarkdown(defaultMarkdown);
-        }
-    };
-
     // 注入自定义样式
     useEffect(() => {
         const style = document.createElement('style');
@@ -381,14 +228,10 @@ const StreamMarkdown = ({ outline }: SlideShowProps) => {
 
     // 自动初始化
     useEffect(() => {
-        if (useAPI) {
-            // 使用流式接口
-            callRealStreamingAPI();
-        } else {
-            // 使用本地默认内容
-            initMarkdown(defaultMarkdown);
+        if (outline) {
+            initMarkdown(outline);
         }
-    }, []);
+    }, [outline]);
 
     // 应用编辑的内容
     const applyMarkdown = () => {
@@ -522,14 +365,6 @@ const StreamMarkdown = ({ outline }: SlideShowProps) => {
 
             {/* 控制按钮组 */}
             <div className="slideshow__controls">
-                <button
-                    onClick={toggleDataSource}
-                    className={`slideshow__control-button ${
-                        useAPI ? 'slideshow__control-button--api' : 'slideshow__control-button--local'
-                    }`}
-                >
-                    {useAPI ? '🌐 接口模式' : '📄 本地模式'}
-                </button>
                 <button
                     onClick={() => {
                         setEditingMd(md);

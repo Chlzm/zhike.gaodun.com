@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import OutlineInput from './components/OutlineInput';
 import OutlineStream from './components/OutlineStream';
 import SlideShow from './components/SlideShow';
-import './app.css';
+import './app.scss';
 
 function App() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -26,18 +26,17 @@ function App() {
   };
 
   return (
-    <>
+    <div id='app'>
       {currentStep === 1 && <OutlineInput onNext={handleInputNext} />}
       {currentStep === 2 && (
         <OutlineStream
           topic={topic}
-          tags={tags}
           onConfirm={handleStreamConfirm}
           onBack={handleStreamBack}
         />
       )}
       {currentStep === 3 && <SlideShow outline={outline} />}
-    </>
+    </div>
   );
 }
 

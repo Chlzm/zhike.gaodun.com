@@ -3,19 +3,18 @@ import { useState, useEffect } from 'react';
 
 interface OutlineStreamProps {
   topic: string;
-  tags: string[];
   onConfirm: (outline: string) => void;
   onBack: () => void;
 }
 
-const OutlineStream = ({ topic, tags, onConfirm, onBack }: OutlineStreamProps) => {
+const OutlineStream = ({ topic, onConfirm, onBack }: OutlineStreamProps) => {
   const [outline, setOutline] = useState('');
   const [isStreaming, setIsStreaming] = useState(true);
 
   // 真实API流式调用
   useEffect(() => {
     callRealStreamingAPI();
-  }, [topic, tags]);
+  }, [topic]);
 
 
   // 真实API流式调用
@@ -105,20 +104,10 @@ const OutlineStream = ({ topic, tags, onConfirm, onBack }: OutlineStreamProps) =
 
   return (
     <div className="outline-stream">
+
       <div className="outline-stream__container">
         <div className="outline-stream__header">
-          <h1 className="outline-stream__title">
-            内容生成中...
-          </h1>
-          {tags.length > 0 && (
-            <div className="outline-stream__tags">
-              {tags.map(tag => (
-                <span key={tag} className="outline-stream__tag">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
+          编辑大纲
         </div>
 
         <div className="outline-stream__content">
@@ -129,19 +118,27 @@ const OutlineStream = ({ topic, tags, onConfirm, onBack }: OutlineStreamProps) =
         </div>
 
         <div className="outline-stream__actions">
-          <button
+
+          <div
             onClick={onBack}
-            className="outline-stream__button outline-stream__button--back"
+            style={{ 
+              opacity: isStreaming ? 0.4 : 1,
+              pointerEvents: isStreaming ? 'disabled' : 'auto',
+              cursor: isStreaming ? 'default' : 'pointer'
+            }}
           >
             返回修改
-          </button>
-          <button
+          </div>
+          <div
+            style={{ 
+              opacity: isStreaming ? 0.4 : 1,
+              pointerEvents: isStreaming ? 'disabled' : 'auto',
+              cursor: isStreaming ? 'default' : 'pointer'
+            }}
             onClick={() => onConfirm(outline)}
-            disabled={isStreaming}
-            className="outline-stream__button outline-stream__button--confirm"
           >
-            {isStreaming ? '生成中...' : '确认并生成幻灯片'}
-          </button>
+            确认生成幻灯片
+          </div>
         </div>
       </div>
     </div>
