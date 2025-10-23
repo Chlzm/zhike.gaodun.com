@@ -11,6 +11,7 @@ interface TOCItem {
 
 interface SlideShowProps {
     outline?: string; // 从OutlineStream传入的大纲内容
+    onBack?: () => void;
 }
 
 // 声明全局变量类型
@@ -23,14 +24,13 @@ declare global {
     }
 }
 
-const StreamMarkdown = ({ outline }: SlideShowProps) => {
+const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
     const [md, setMD] = useState(outline || '');
 
     const revealRef = useRef(null);
     const slidesRef = useRef(null);
     const [isInitialized, setIsInitialized] = useState(false);
     const [tocItems, setTocItems] = useState<TOCItem[]>([]);
-    const [showToc, setShowToc] = useState(false);
     const [activeSlide, setActiveSlide] = useState({ h: 0, v: 0 });
     const [showEditor, setShowEditor] = useState(false);
     const [editingMd, setEditingMd] = useState(md);
@@ -147,7 +147,6 @@ const StreamMarkdown = ({ outline }: SlideShowProps) => {
     const goToSlide = (h: number, v: number) => {
         if (window.Reveal) {
             window.Reveal.slide(h, v);
-            setShowToc(false);
         }
     };
 
@@ -159,45 +158,80 @@ const StreamMarkdown = ({ outline }: SlideShowProps) => {
             .reveal .slides section {
                 width: 100%;
                 height: 100%;
-                overflow: auto !important;
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
                 max-height: 100vh !important;
-                padding: 20px !important;
+                padding: 30px 40px !important;
                 box-sizing: border-box !important;
                 display: flex !important;
                 flex-direction: column !important;
-                justify-content: center !important;
-                align-items: center !important;
+                justify-content: flex-start !important;
+                align-items: flex-start !important;
+                text-align: left !important;
+            }
+            
+            /* 标题居中显示 */
+            .reveal .slides section h1,
+            .reveal .slides section h2,
+            .reveal .slides section h3,
+            .reveal .slides section h4 {
                 text-align: center !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
             }
             
             /* 控制字体大小 - 更紧凑的布局 */
             .reveal .slides section h1 {
-                font-size: 1.8em !important;
-                margin-bottom: 0.3em !important;
-            }
-            
-            .reveal .slides section h2 {
                 font-size: 1.5em !important;
                 margin-bottom: 0.3em !important;
             }
             
-            .reveal .slides section h3 {
-                font-size: 1.2em !important;
-                margin-bottom: 0.25em !important;
+            .reveal .slides section h2 {
+                font-size: 1.3em !important;
+                margin-bottom: 0.3em !important;
             }
             
-            .reveal .slides section p {
-                font-size: 0.85em !important;
-                line-height: 1.4 !important;
-                margin-bottom: 0.5em !important;
+            .reveal .slides section h3 {
+                font-size: 1.1em !important;
+                margin-bottom: 0.2em !important;
+            }
+            
+            .reveal .slides section h4 {
+                font-size: 1em !important;
+                margin-bottom: 0.2em !important;
+            }
+            
+            /* 段落和列表项从左往右展示 */
+            .reveal .slides section p,
+            .reveal .slides section li {
+                font-size: 0.75em !important;
+                line-height: 1.5 !important;
+                margin-bottom: 0.4em !important;
+                text-align: left !important;
+            }
+            
+            /* 列表和引用块左对齐 */
+            .reveal .slides section ul,
+            .reveal .slides section ol {
+                display: block;
+                text-align: left !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            
+            .reveal .slides section blockquote {
+                text-align: left !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
             }
             
             /* 控制图片大小 - 更紧凑 */
             .reveal .slides section img {
-                max-width: 70% !important;
-                max-height: 35vh !important;
+                max-width: 60% !important;
+                max-height: 30vh !important;
                 object-fit: contain !important;
-                margin: 8px auto !important;
+                margin: 8px 0 !important;
                 display: block !important;
             }
             
@@ -318,70 +352,77 @@ const StreamMarkdown = ({ outline }: SlideShowProps) => {
                 </div>
             )}
 
-            {/* 左上角目录按钮 */}
-            <div className="slideshow__toc-wrapper">
-                <button
-                    onClick={() => setShowToc(!showToc)}
-                    className="slideshow__toc-button"
-                >
-                    📑 目录
-                </button>
-
-                {showToc && (
-                    <div className="toc-container slideshow__toc-container">
-                        <h3 className="slideshow__toc-title">
-                            幻灯片目录
-                        </h3>
-
-                        {tocItems.map((item, index) => (
-                            <div
-                                key={index}
-                                onClick={() => goToSlide(item.h, item.v)}
-                                className={`slideshow__toc-item ${
-                                    item.isVertical ? 'slideshow__toc-item--vertical' : ''
-                                } ${
-                                    activeSlide.h === item.h && activeSlide.v === item.v ? 'slideshow__toc-item--active' : ''
-                                }`}
-                            >
-                                {item.imageUrl && (
-                                    <img
-                                        src={item.imageUrl}
-                                        alt={item.title}
-                                        className="slideshow__toc-item-image"
-                                    />
-                                )}
-                                <span className="slideshow__toc-item-title">{item.title}</span>
-                            </div>
-                        ))}
+            {/* 新布局：上下结构 */}
+            <div className="slideshow__layout">
+                {/* 顶部 Header */}
+                <div className="slideshow__header">
+                    <button 
+                        className="slideshow__back-button"
+                        onClick={onBack}
+                    >
+                        <span style={{ fontSize: '18px' }}>←</span>
+                        <span>返回</span>
+                    </button>
+                    <div className="slideshow__header-controls">
+                        <button
+                            onClick={() => {
+                                setEditingMd(md);
+                                setShowEditor(true);
+                            }}
+                            className="slideshow__control-button slideshow__control-button--edit"
+                        >
+                            <span style={{ fontSize: '16px' }}>✏️</span>
+                            <span>编辑</span>
+                        </button>
+                        <button
+                            onClick={() => {
+                                window.print();
+                            }}
+                            className="slideshow__control-button slideshow__control-button--pdf"
+                        >
+                            <span style={{ fontSize: '16px' }}>📄</span>
+                            <span>导出PDF</span>
+                        </button>
                     </div>
-                )}
-            </div>
-
-            <div className="reveal" ref={revealRef} style={{ width: '100vw', height: '100vh' }}>
-                <div className="slides" ref={slidesRef}>
-                    {/* 内容将通过 JavaScript 动态插入 */}
                 </div>
-            </div>
 
-            {/* 控制按钮组 */}
-            <div className="slideshow__controls">
-                <button
-                    onClick={() => {
-                        setEditingMd(md);
-                        setShowEditor(true);
-                    }}
-                    className="slideshow__control-button slideshow__control-button--edit"
-                >
-                    ✏️ 编辑 Markdown
-                </button>
-                <button
-                    onClick={() => {
-                        window.print();
-                    }}
-                    className="slideshow__control-button slideshow__control-button--pdf"
-                >
-                    📄 导出 PDF
-                </button>
+                {/* 底部左右结构 */}
+                <div className="slideshow__main">
+                    {/* 左侧目录 */}
+                    <div className="slideshow__sidebar">
+                        <div className="slideshow__toc-list">
+                            {tocItems.map((item, index) => (
+                                <div
+                                    key={index}
+                                    onClick={() => goToSlide(item.h, item.v)}
+                                    className={`slideshow__toc-item ${
+                                        item.isVertical ? 'slideshow__toc-item--vertical' : ''
+                                    } ${
+                                        activeSlide.h === item.h && activeSlide.v === item.v ? 'slideshow__toc-item--active' : ''
+                                    }`}
+                                >
+                                    {item.imageUrl && (
+                                        <img
+                                            src={item.imageUrl}
+                                            alt={item.title}
+                                            className="slideshow__toc-item-image"
+                                        />
+                                    )}
+                                    <span className="slideshow__toc-item-title">{item.title}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* 右侧幻灯片展示区 */}
+                    <div className="slideshow__content">
+                        <div className="reveal" ref={revealRef}>
+                            <div className="slides" ref={slidesRef}>
+                                {/* 内容将通过 JavaScript 动态插入 */}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </>
     );
