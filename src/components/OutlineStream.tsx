@@ -27,7 +27,7 @@ const OutlineStream = ({ topic, tags, onConfirm, onBack }: OutlineStreamProps) =
       const response = await fetch('https://api.coze.cn/v1/workflow/stream_run', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer cztei_hzePKf0doK5tx0BAigXPlPzQzsOWqcPloIGaPy1oAqbv3MnG2w8Gkf7J2bvSaXkCR',
+          'Authorization': 'Bearer pat_QSQlmCs3qHiidTmAWAejTZBPw05IlXkUjYdLxvTlg4dTLRGTRxffg4ajLYuiBqmZ',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
