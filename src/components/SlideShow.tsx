@@ -37,37 +37,69 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
     const [canGoLeft, setCanGoLeft] = useState<boolean>(false);
     const [canGoRight, setCanGoRight] = useState<boolean>(false);
     const [currentSlideNumber, setCurrentSlideNumber] = useState<string>('1/1');
+    const [isGlobalLoading, setIsGlobalLoading] = useState<boolean>(false);
 
     const initMarkdown = (initMd: string) => {
+        // 设置全局加载状态
+        setIsGlobalLoading(true);
+        
         // 检查 Reveal 是否已加载
         if (typeof window.Reveal === 'undefined') {
             console.error('Reveal.js 未加载');
             alert('Reveal.js 未加载，请刷新页面重试');
+            setIsGlobalLoading(false);
             return;
         }
 
         try {
-            // 销毁之前的实例
-            if (isInitialized && window.Reveal.destroy) {
+            // 完全重置状态
+            setIsInitialized(false);
+            setTocItems([]);
+            setActiveSlide({ h: 0, v: 0 });
+            setCanGoLeft(false);
+            setCanGoRight(false);
+            setCurrentSlideNumber('1/1');
+
+            // 销毁之前的实例并清理事件监听器
+            if (window.Reveal && window.Reveal.isReady && window.Reveal.isReady()) {
+                // 移除所有事件监听器
+                window.Reveal.off('slidechanged');
                 window.Reveal.destroy();
                 console.log('销毁之前的实例');
             }
 
-            // 清空并重新创建 slides 内容
+            // 确保完全清空slides容器
             if (slidesRef.current) {
-                // 直接设置 innerHTML，让 Reveal.js 处理 Markdown
-                slidesRef.current.innerHTML = `
-                    <section data-markdown data-separator="---" data-separator-vertical="--" data-separator-notes="^Note:">
-                        <textarea data-template>${initMd}</textarea>
-                    </section>
-                `;
+                slidesRef.current.innerHTML = '';
+                // 强制重新渲染
+                setTimeout(() => {
+                    if (slidesRef.current) {
+                        // 直接设置 innerHTML，让 Reveal.js 处理 Markdown
+                        slidesRef.current.innerHTML = `
+                            <section data-markdown data-separator="---" data-separator-vertical="--" data-separator-notes="^Note:">
+                                <textarea data-template>${initMd}</textarea>
+                            </section>
+                        `;
+                        // 延迟初始化Reveal.js，确保DOM更新完成
+                        setTimeout(() => initRevealInstance(), 100);
+                    }
+                }, 50);
             }
+        } catch (error) {
+            console.error('Reveal.js 初始化失败:', error);
+            alert('初始化失败: ' + error.message);
+        }
+    }
+
+    // 独立的Reveal.js初始化函数
+    const initRevealInstance = () => {
+        try {
 
             // 初始化 Reveal.js
             window.Reveal.initialize({
                 plugins: [window.RevealMarkdown, window.RevealHighlight, window.RevealNotes],
                 hash: true,
-                transition: 'slide',
+                // transition: 'none', // 禁用滑动过渡效果
                 slideNumber: false, // 隐藏默认页码
                 center: false, // 禁用垂直居中,避免内容超出
                 controls: false, // 隐藏默认导航控件
@@ -115,11 +147,23 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
 
                 // 初始化导航状态
                 updateNavigationState();
+                
+                // 延迟500ms后关闭全局加载状态
+                setTimeout(() => {
+                    setIsGlobalLoading(false);
+                }, 500);
+            }).catch((error: any) => {
+                console.error('Reveal.js 初始化失败:', error);
+                alert('初始化失败: ' + error.message);
+                setIsInitialized(false);
+                setIsGlobalLoading(false);
             });
 
         } catch (error) {
             console.error('Reveal.js 初始化失败:', error);
             alert('初始化失败: ' + error.message);
+            setIsInitialized(false);
+            setIsGlobalLoading(false);
         }
     }
 
@@ -318,6 +362,16 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
 
     return (
         <>
+            {/* 全局页面加载遮罩 */}
+            {isGlobalLoading && (
+                <div className="slideshow__global-loading">
+                    <div className="slideshow__global-loading-content">
+                        <div className="slideshow__global-loading-spinner"></div>
+                        <div className="slideshow__global-loading-text">正在初始化幻灯片...</div>
+                    </div>
+                </div>
+            )}
+            
             {/* Markdown 编辑器 */}
             {showEditor && (
                 <div style={{

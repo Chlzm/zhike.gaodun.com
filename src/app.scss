@@ -699,3 +699,49 @@
   -webkit-box-orient: vertical;
   text-align: left;
 }
+
+/* 全局页面加载遮罩 */
+.slideshow__global-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+}
+
+.slideshow__global-loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.slideshow__global-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top: 4px solid #ffffff;
+  border-radius: 50%;
+  animation: global-spin 1s linear infinite;
+}
+
+.slideshow__global-loading-text {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+@keyframes global-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 隐藏 Reveal.js 的 textarea 模板 */
+textarea[data-template] {
+  display: none !important;
+}
