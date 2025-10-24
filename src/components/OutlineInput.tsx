@@ -8,7 +8,7 @@ interface OutlineInputProps {
 }
 
 const OutlineInput = ({ onNext }: OutlineInputProps) => {
-  const [topic, setTopic] = useState("");
+  const [topic, setTopic] = useState("职业综合能力提升");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
@@ -28,7 +28,7 @@ const OutlineInput = ({ onNext }: OutlineInputProps) => {
         <textarea
           value={topic}
           onChange={(e) => setTopic(e.target.value)}
-          placeholder="职业综合能力提升"
+          placeholder="请输入"
           className="outline-input__input"
         />
 
