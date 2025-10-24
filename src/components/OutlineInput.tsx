@@ -8,6 +8,7 @@ interface OutlineInputProps {
 const OutlineInput = ({ onNext }: OutlineInputProps) => {
   const [topic, setTopic] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   const handleNext = () => {
     if (topic.trim()) {
@@ -39,6 +40,31 @@ const OutlineInput = ({ onNext }: OutlineInputProps) => {
             src={require("../submit.png")}
           />
         </div>
+      </div>
+
+      {/* 底部箭头按钮 */}
+      <div 
+        className="outline-input__arrow-button"
+        onClick={() => setIsPanelOpen(!isPanelOpen)}
+      >
+        <span className="arrow-icon">{isPanelOpen ? '▼' : '▲'}</span>
+      </div>
+
+      {/* 滑动面板 */}
+      <div className={`outline-input__slide-panel ${isPanelOpen ? 'open' : ''}`}>
+        <div className="slide-panel__header">
+          <button 
+            className="slide-panel__close-button"
+            onClick={() => setIsPanelOpen(false)}
+          >
+            <span className="arrow-icon">▼</span>
+          </button>
+        </div>
+        <iframe 
+          src="https://fub647skqd.skywork.website/"
+          className="slide-panel__iframe"
+          title="External Content"
+        />
       </div>
     </div>
   );

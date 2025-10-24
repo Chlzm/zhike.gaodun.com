@@ -81,6 +81,98 @@
     display: flex;
     justify-content: flex-end;
   }
+
+  /* 底部箭头按钮 */
+  .outline-input__arrow-button {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateX(-50%) scale(1.1);
+    }
+
+    .arrow-icon {
+      font-size: 24px;
+      color: #fff;
+      font-weight: bold;
+    }
+  }
+
+  /* 滑动面板 */
+  .outline-input__slide-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.15);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+
+    &.open {
+      transform: translateY(0);
+    }
+
+    .slide-panel__header {
+      height: 60px;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid #404040;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+      .slide-panel__close-button {
+        width: 50px;
+        height: 50px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        border-radius: 8px;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.1);
+        }
+
+        .arrow-icon {
+          font-size: 20px;
+          color: #e0e0e0;
+          font-weight: bold;
+        }
+      }
+    }
+
+    .slide-panel__iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+      // background: transparent;
+    }
+  }
 }
 
 /* ==================== OutlineStream 样式 ==================== */
