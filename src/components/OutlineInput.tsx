@@ -43,12 +43,18 @@ const OutlineInput = ({ onNext }: OutlineInputProps) => {
       </div>
 
       {/* 底部箭头按钮 */}
-      <div 
-        className="outline-input__arrow-button"
-        onClick={() => setIsPanelOpen(!isPanelOpen)}
-      >
-        <span className="arrow-icon">{isPanelOpen ? '▼' : '▲'}</span>
-      </div>
+      {!isPanelOpen && (
+        <div 
+          className="outline-input__arrow-button"
+          onClick={() => setIsPanelOpen(!isPanelOpen)}
+        >
+          <img 
+            src={require("../arrow-down 1.png")} 
+            alt="arrow" 
+            className="arrow-icon"
+          />
+        </div>
+      )}
 
       {/* 滑动面板 */}
       <div className={`outline-input__slide-panel ${isPanelOpen ? 'open' : ''}`}>
@@ -57,11 +63,16 @@ const OutlineInput = ({ onNext }: OutlineInputProps) => {
             className="slide-panel__close-button"
             onClick={() => setIsPanelOpen(false)}
           >
-            <span className="arrow-icon">▼</span>
+            <img 
+              src={require("../arrow-down 1.png")} 
+              alt="arrow" 
+              className="arrow-icon rotated"
+            />
           </button>
         </div>
         <iframe 
           src="https://fub647skqd.skywork.website/"
+          // src="www.baidu.com"
           className="slide-panel__iframe"
           title="External Content"
         />

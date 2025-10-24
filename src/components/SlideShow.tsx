@@ -34,6 +34,9 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
     const [activeSlide, setActiveSlide] = useState({ h: 0, v: 0 });
     const [showEditor, setShowEditor] = useState(false);
     const [editingMd, setEditingMd] = useState(md);
+    const [canGoLeft, setCanGoLeft] = useState<boolean>(false);
+    const [canGoRight, setCanGoRight] = useState<boolean>(false);
+    const [currentSlideNumber, setCurrentSlideNumber] = useState<string>('1/1');
 
     const initMarkdown = (initMd: string) => {
         // 检查 Reveal 是否已加载
@@ -65,21 +68,38 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
                 plugins: [window.RevealMarkdown, window.RevealHighlight, window.RevealNotes],
                 hash: true,
                 transition: 'slide',
-                slideNumber: true,
+                slideNumber: false, // 隐藏默认页码
                 center: false, // 禁用垂直居中,避免内容超出
-                controls: true,
-                progress: true,
+                controls: false, // 隐藏默认导航控件
+                progress: false, // 隐藏进度条
+                navigationMode: 'vertical', // 设置为垂直导航模式
                 width: '100%',
                 height: '100%',
                 margin: 0.04,
                 minScale: 0.2,
                 maxScale: 2.0,
+                // PDF 导出配置
+                pdf: true,
+                pdfMaxPagesPerSlide: 1,
+                pdfSeparateFragments: false,
                 markdown: {
                     smartypants: true
                 }
             }).then(() => {
                 console.log('Reveal.js 初始化成功');
                 setIsInitialized(true);
+
+                // 检测是否是PDF导出模式
+                const isPrintMode = window.location.search.includes('print-pdf');
+                if (isPrintMode) {
+                    // 在PDF模式下，确保所有幻灯片都显示
+                    document.body.classList.add('print-pdf');
+                    // 移除导航和控制元素
+                    const header = document.querySelector('.slideshow__header');
+                    const sidebar = document.querySelector('.slideshow__sidebar');
+                    if (header) header.style.display = 'none';
+                    if (sidebar) sidebar.style.display = 'none';
+                }
 
                 // 跳转到第一页
                 window.Reveal.slide(0, 0);
@@ -90,7 +110,11 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
                 // 监听幻灯片切换事件
                 window.Reveal.on('slidechanged', (event: any) => {
                     setActiveSlide({ h: event.indexh, v: event.indexv });
+                    updateNavigationState();
                 });
+
+                // 初始化导航状态
+                updateNavigationState();
             });
 
         } catch (error) {
@@ -141,6 +165,24 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
         });
 
         setTocItems(items);
+    };
+
+    // 更新导航状态
+    const updateNavigationState = () => {
+        if (!window.Reveal) return;
+        
+        const totalSlides = window.Reveal.getTotalSlides();
+        const currentSlide = window.Reveal.getIndices();
+        const isFirstSlide = currentSlide.h === 0 && currentSlide.v === 0;
+        const isLastSlide = window.Reveal.isLastSlide();
+        
+        // 计算当前幻灯片序号（从1开始）
+        const currentIndex = currentSlide.h + 1;
+        const slideNumber = `${currentIndex}/${totalSlides}`;
+        
+        setCanGoLeft(!isFirstSlide);
+        setCanGoRight(!isLastSlide);
+        setCurrentSlideNumber(slideNumber);
     };
 
     // 跳转到指定幻灯片
@@ -296,22 +338,33 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
                         alignItems: 'center',
                         marginBottom: '10px'
                     }}>
-                        <h2 style={{ color: 'white', margin: 0 }}>编辑 Markdown</h2>
+                        <h2 style={{ color: 'white', margin: 0 }}>编辑</h2>
                         <div>
                             <button
                                 onClick={applyMarkdown}
                                 style={{
-                                    background: '#28a745',
-                                    color: 'white',
-                                    border: 'none',
+                                    background: '#2d2d2d',
+                                    color: '#e0e0e0',
+                                    border: '1px solid #404040',
                                     padding: '10px 20px',
                                     cursor: 'pointer',
-                                    borderRadius: '5px',
+                                    borderRadius: '8px',
                                     fontSize: '16px',
-                                    marginRight: '10px'
+                                    marginRight: '10px',
+                                    transition: 'all 0.3s ease'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background = '#3a3a3a';
+                                    e.currentTarget.style.borderColor = '#555555';
+                                    e.currentTarget.style.transform = 'translateY(-1px)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background = '#2d2d2d';
+                                    e.currentTarget.style.borderColor = '#404040';
+                                    e.currentTarget.style.transform = 'translateY(0)';
                                 }}
                             >
-                                ✅ 应用更改
+                                应用更改
                             </button>
                             <button
                                 onClick={() => {
@@ -319,16 +372,27 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
                                     setEditingMd(md); // 取消时恢复原内容
                                 }}
                                 style={{
-                                    background: '#dc3545',
-                                    color: 'white',
-                                    border: 'none',
+                                    background: '#2d2d2d',
+                                    color: '#e0e0e0',
+                                    border: '1px solid #404040',
                                     padding: '10px 20px',
                                     cursor: 'pointer',
-                                    borderRadius: '5px',
-                                    fontSize: '16px'
+                                    borderRadius: '8px',
+                                    fontSize: '16px',
+                                    transition: 'all 0.3s ease'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background = '#3a3a3a';
+                                    e.currentTarget.style.borderColor = '#555555';
+                                    e.currentTarget.style.transform = 'translateY(-1px)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background = '#2d2d2d';
+                                    e.currentTarget.style.borderColor = '#404040';
+                                    e.currentTarget.style.transform = 'translateY(0)';
                                 }}
                             >
-                                ❌ 取消
+                                 取消
                             </button>
                         </div>
                     </div>
@@ -356,13 +420,18 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
             <div className="slideshow__layout">
                 {/* 顶部 Header */}
                 <div className="slideshow__header">
-                    <button 
+                    <div 
                         className="slideshow__back-button"
                         onClick={onBack}
                     >
-                        <span style={{ fontSize: '18px' }}>←</span>
+                        <img 
+                            src={require("../arrow-down 1.png")} 
+                            alt="返回" 
+                            className="arrow-icon"
+                            style={{ transform: 'rotate(90deg)', marginRight: '4px' }}
+                        />
                         <span>返回</span>
-                    </button>
+                    </div>
                     <div className="slideshow__header-controls">
                         <button
                             onClick={() => {
@@ -371,17 +440,100 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
                             }}
                             className="slideshow__control-button slideshow__control-button--edit"
                         >
-                            <span style={{ fontSize: '16px' }}>✏️</span>
                             <span>编辑</span>
                         </button>
                         <button
-                            onClick={() => {
-                                window.print();
+                            onClick={async () => {
+                                // 直接生成PDF并下载
+                                try {
+                                    // 获取所有幻灯片内容
+                                    const slides = document.querySelectorAll('.reveal .slides section');
+                                    if (slides.length === 0) {
+                                        alert('未找到幻灯片内容');
+                                        return;
+                                    }
+
+                                    // 创建一个新的window用于PDF生成
+                                    const printContent = Array.from(slides).map((slide, index) => {
+                                        return `
+                                            <div style="
+                                                page-break-after: ${index === slides.length - 1 ? 'avoid' : 'always'};
+                                                width: 100%;
+                                                height: 100vh;
+                                                padding: 40px;
+                                                box-sizing: border-box;
+                                                display: flex;
+                                                flex-direction: column;
+                                                justify-content: flex-start;
+                                                align-items: flex-start;
+                                                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                                                color: #333;
+                                                background: white;
+                                            ">
+                                                ${slide.innerHTML}
+                                            </div>
+                                        `;
+                                    }).join('');
+
+                                    // 创建完整的HTML文档
+                                    const fullHtml = `
+                                        <!DOCTYPE html>
+                                        <html>
+                                        <head>
+                                            <meta charset="utf-8">
+                                            <title>幻灯片导出</title>
+                                            <style>
+                                                @page {
+                                                    size: A4;
+                                                    margin: 0;
+                                                }
+                                                body {
+                                                    margin: 0;
+                                                    padding: 0;
+                                                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                                                }
+                                                h1, h2, h3, h4, h5, h6 {
+                                                    margin: 0 0 20px 0;
+                                                    color: #2c3e50;
+                                                }
+                                                p, li {
+                                                    line-height: 1.6;
+                                                    margin: 0 0 15px 0;
+                                                }
+                                                ul, ol {
+                                                    margin: 0 0 20px 20px;
+                                                }
+                                            </style>
+                                        </head>
+                                        <body>
+                                            ${printContent}
+                                        </body>
+                                        </html>
+                                    `;
+
+                                    // 创建新窗口并直接打印
+                                    const printWindow = window.open('', '_blank');
+                                    if (printWindow) {
+                                        printWindow.document.write(fullHtml);
+                                        printWindow.document.close();
+                                        
+                                        // 等待内容加载完成后自动打印
+                                        setTimeout(() => {
+                                            printWindow.print();
+                                            // 打印对话框关闭后自动关闭窗口
+                                            printWindow.addEventListener('afterprint', () => {
+                                                printWindow.close();
+                                            });
+                                        }, 500);
+                                    }
+                                } catch (error) {
+                                    console.error('导出PDF失败:', error);
+                                    alert('导出失败，请重试');
+                                }
                             }}
                             className="slideshow__control-button slideshow__control-button--pdf"
                         >
-                            <span style={{ fontSize: '16px' }}>📄</span>
-                            <span>导出PDF</span>
+                            <span>导出</span>
                         </button>
                     </div>
                 </div>
@@ -401,13 +553,9 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
                                         activeSlide.h === item.h && activeSlide.v === item.v ? 'slideshow__toc-item--active' : ''
                                     }`}
                                 >
-                                    {item.imageUrl && (
-                                        <img
-                                            src={item.imageUrl}
-                                            alt={item.title}
-                                            className="slideshow__toc-item-image"
-                                        />
-                                    )}
+                                    <div className="slideshow__toc-item-number">
+                                        {index + 1}
+                                    </div>
                                     <span className="slideshow__toc-item-title">{item.title}</span>
                                 </div>
                             ))}
@@ -416,6 +564,13 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
 
                     {/* 右侧幻灯片展示区 */}
                     <div className="slideshow__content">
+                        {/* 导航箭头已隐藏 */}
+                        
+                        {/* 自定义页码显示 */}
+                        <div className="slideshow__custom-slide-number">
+                            {currentSlideNumber}
+                        </div>
+                        
                         <div className="reveal" ref={revealRef}>
                             <div className="slides" ref={slidesRef}>
                                 {/* 内容将通过 JavaScript 动态插入 */}
