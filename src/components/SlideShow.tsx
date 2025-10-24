@@ -323,8 +323,7 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
             
             /* 控制图片大小 - 更紧凑 */
             .reveal .slides section img {
-                max-width: 60% !important;
-                max-height: 30vh !important;
+                max-width: 45% !important;
                 object-fit: contain !important;
                 margin: 8px 0 !important;
                 display: block !important;
