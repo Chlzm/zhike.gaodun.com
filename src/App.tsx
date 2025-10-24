@@ -27,14 +27,25 @@ function App() {
   return (
     <div id='app'>
       {currentStep === 1 && <OutlineInput onNext={handleInputNext} />}
-      {currentStep === 2 && (
+      {/* {currentStep === 2 && (
         <OutlineStream
           topic={topic}
           onConfirm={handleStreamConfirm}
           onBack={handleStreamBack}
         />
-      )}
-      {currentStep === 3 && <SlideShow outline={outline} onBack={() => window.location.reload()} />}
+      )} */}
+      <div style={{ height: '100vh', display: currentStep === 2 ? 'flex' : 'none', justifyContent: 'center', alignItems:'center' }}>
+         <OutlineStream
+          topic={topic}
+          onConfirm={handleStreamConfirm}
+          onBack={handleStreamBack}
+        />
+      </div>
+      <div style={{ display: currentStep === 3 ? 'flex' : 'none' }}>
+        <SlideShow currentStep={currentStep} outline={outline} onBack={() => setCurrentStep(2)} />
+      </div>
+      {/* {currentStep === 3 && <SlideShow outline={outline} onBack={() => window.location.reload()} />} */}
+      {/* {currentStep === 3 && <SlideShow key={Math.random()} outline={outline} onBack={() => setCurrentStep(2)} />} */}
     </div>
   );
 }

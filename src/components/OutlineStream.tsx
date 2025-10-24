@@ -12,6 +12,7 @@ const OutlineStream = ({ topic, onConfirm, onBack }: OutlineStreamProps) => {
   const [outline, setOutline] = useState(``);
   const [isStreaming, setIsStreaming] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   // 默认markdown内容
   const defaultMarkdown = `
@@ -50,6 +51,7 @@ const OutlineStream = ({ topic, onConfirm, onBack }: OutlineStreamProps) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'p') {
+        abortControllerRef.current.abort();
         event.preventDefault();
         setIsStreaming(false);
         setOutline(defaultMarkdown);
@@ -60,11 +62,19 @@ const OutlineStream = ({ topic, onConfirm, onBack }: OutlineStreamProps) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [defaultMarkdown]);
+  }, []);
 
   // 真实API流式调用
   useEffect(() => {
     callRealStreamingAPI();
+    
+    // 组件卸载时销毁fetch请求
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        console.log('Fetch request aborted on component unmount');
+      }
+    };
   }, [topic]);
 
 
@@ -73,8 +83,13 @@ const OutlineStream = ({ topic, onConfirm, onBack }: OutlineStreamProps) => {
     try {
       setIsStreaming(true);
       setOutline('');
+      
+      // 创建新的AbortController实例
+      abortControllerRef.current = new AbortController();
+      const signal = abortControllerRef.current.signal;
 
       const response = await fetch('https://api.coze.cn/v1/workflow/stream_run', {
+        signal,
         method: 'POST',
         headers: {
           'Authorization': 'Bearer pat_Ixb05xOh3D8wmdKr8ehv1PDohbtpmLFD8LJgJI3s5aMb1vGGBxhb77jfDje6QyDg',
@@ -158,6 +173,12 @@ const OutlineStream = ({ topic, onConfirm, onBack }: OutlineStreamProps) => {
         }
       }, 10);
     } catch (error) {
+      // 忽略AbortError，这是正常的取消行为
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.log('Fetch request was aborted');
+        return;
+      }
+      
       console.error('API调用失败:', error);
       setIsStreaming(false);
       setOutline('生成大纲失败，请重试');

@@ -12,6 +12,7 @@ interface TOCItem {
 interface SlideShowProps {
     outline?: string; // 从OutlineStream传入的大纲内容
     onBack?: () => void;
+    currentStep?: number;
 }
 
 // 声明全局变量类型
@@ -24,7 +25,7 @@ declare global {
     }
 }
 
-const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
+const StreamMarkdown = ({ currentStep, outline, onBack }: SlideShowProps) => {
     const [md, setMD] = useState(outline || '');
 
     const revealRef = useRef(null);
@@ -63,9 +64,9 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
             // 销毁之前的实例并清理事件监听器
             if (window.Reveal && window.Reveal.isReady && window.Reveal.isReady()) {
                 // 移除所有事件监听器
-                window.Reveal.off('slidechanged');
-                window.Reveal.destroy();
-                console.log('销毁之前的实例');
+                // window.Reveal.off('slidechanged');
+                // window.Reveal.destroy();
+                // console.log('销毁之前的实例');
             }
 
             // 确保完全清空slides容器
@@ -83,8 +84,7 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
                         // 延迟初始化Reveal.js，确保DOM更新完成
                         setTimeout(() => initRevealInstance(), 100);
                     }
-                }, 50);
-            }
+                }, 50);            }
         } catch (error) {
             console.error('Reveal.js 初始化失败:', error);
             alert('初始化失败: ' + error.message);
@@ -356,10 +356,17 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
 
     // 自动初始化
     useEffect(() => {
-        if (outline) {
+        if (outline && currentStep === 3) {
             initMarkdown(outline);
         }
     }, [outline]);
+
+    // useEffect(() => {
+    //     return () => {
+    //         console.log('destroy， 跨境电商客服看拉升的');
+    //         window.Reveal.destroy();
+    //     }
+    // }, []);
 
     // 应用编辑的内容
     const applyMarkdown = () => {
@@ -497,7 +504,7 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
                     <div className="slideshow__header-controls">
                         <button
                             onClick={() => {
-                                setEditingMd(md);
+                                setEditingMd(outline);
                                 setShowEditor(true);
                             }}
                             className="slideshow__control-button slideshow__control-button--edit"
