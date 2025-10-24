@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { useState, useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
 
 interface OutlineStreamProps {
   topic: string;
@@ -124,7 +125,7 @@ const OutlineStream = ({ topic, onConfirm, onBack }: OutlineStreamProps) => {
         </div>
 
         <div className="outline-stream__content" ref={contentRef}>
-          {outline}
+          <ReactMarkdown>{outline}</ReactMarkdown>
           {isStreaming && (
             <span className="outline-stream__cursor" />
           )}
