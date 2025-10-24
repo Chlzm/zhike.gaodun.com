@@ -9,7 +9,7 @@ interface OutlineStreamProps {
 }
 
 const OutlineStream = ({ topic, onConfirm, onBack }: OutlineStreamProps) => {
-  const [outline, setOutline] = useState('');
+  const [outline, setOutline] = useState(``);
   const [isStreaming, setIsStreaming] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -28,11 +28,11 @@ const OutlineStream = ({ topic, onConfirm, onBack }: OutlineStreamProps) => {
       const response = await fetch('https://api.coze.cn/v1/workflow/stream_run', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer pat_QSQlmCs3qHiidTmAWAejTZBPw05IlXkUjYdLxvTlg4dTLRGTRxffg4ajLYuiBqmZ',
+          'Authorization': 'Bearer pat_AVqyathK1mrTWzL2I4c262MXn1UDXScwnuMHmYyi2CYiiYyRcrlmvrgJHAHDOKo3',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          workflow_id: '7563227177929637903',
+          workflow_id: '7564669913769639982',
           parameters: {
             keyword: topic,
           }
