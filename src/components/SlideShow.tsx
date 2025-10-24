@@ -247,7 +247,8 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
                 overflow-y: auto !important;
                 overflow-x: hidden !important;
                 max-height: 100vh !important;
-                padding: 30px 40px !important;
+                padding: 24px !important;
+                padding-top: 48px !important;
                 box-sizing: border-box !important;
                 display: flex !important;
                 flex-direction: column !important;
@@ -269,28 +270,34 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
             
             /* 控制字体大小 - 更紧凑的布局 */
             .reveal .slides section h1 {
+                text-align: left !important;
                 font-size: 36px !important;
-                margin-bottom: 8px !important;
+                margin-bottom: 40px !important;
             }
             
             .reveal .slides section h2 {
+                text-align: left !important;
                 font-size: 28px !important;
-                margin-bottom: 6px !important;
+                margin-bottom: 32px !important;
             }
             
             .reveal .slides section h3 {
+                text-align: left !important;
                 font-size: 20px !important;
-                margin-bottom: 4px !important;
+                margin-bottom: 24px !important;
             }
             
             .reveal .slides section h4 {
+                text-align: left !important;
                 font-size: 18px !important;
-                margin-bottom: 4px !important;
+                margin-bottom: 16px !important;
             }
             
             /* 段落和列表项从左往右展示 */
             .reveal .slides section p,
             .reveal .slides section li {
+                display: flex;
+                gap: 24px;
                 font-size: 16px !important;
                 line-height: 1.5 !important;
                 margin-bottom: 8px !important;
@@ -304,6 +311,8 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
                 text-align: left !important;
                 max-width: 100% !important;
                 box-sizing: border-box !important;
+                margin: unset !important;
+                padding-inline-start: 0 !important;
             }
             
             .reveal .slides section blockquote {
