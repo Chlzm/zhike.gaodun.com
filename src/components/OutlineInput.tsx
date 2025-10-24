@@ -1,5 +1,7 @@
 // @ts-nocheck
 import { useState } from "react";
+import SalesPage from './SalesPage';
+
 
 interface OutlineInputProps {
   onNext: (topic: string, tags: string[]) => void;
@@ -26,7 +28,7 @@ const OutlineInput = ({ onNext }: OutlineInputProps) => {
         <textarea
           value={topic}
           onChange={(e) => setTopic(e.target.value)}
-          placeholder="例如:人工智能在教育领域的应用"
+          placeholder="职业综合能力提升"
           className="outline-input__input"
         />
 
@@ -42,41 +44,7 @@ const OutlineInput = ({ onNext }: OutlineInputProps) => {
         </div>
       </div>
 
-      {/* 底部箭头按钮 */}
-      {!isPanelOpen && (
-        <div 
-          className="outline-input__arrow-button"
-          onClick={() => setIsPanelOpen(!isPanelOpen)}
-        >
-          <img 
-            src={require("../arrow-down 1.png")} 
-            alt="arrow" 
-            className="arrow-icon"
-          />
-        </div>
-      )}
-
-      {/* 滑动面板 */}
-      <div className={`outline-input__slide-panel ${isPanelOpen ? 'open' : ''}`}>
-        <div className="slide-panel__header">
-          <button 
-            className="slide-panel__close-button"
-            onClick={() => setIsPanelOpen(false)}
-          >
-            <img 
-              src={require("../arrow-down 1.png")} 
-              alt="arrow" 
-              className="arrow-icon rotated"
-            />
-          </button>
-        </div>
-        <iframe 
-          // src="https://fub647skqd.skywork.website/"
-          src="https://www.baidu.com"
-          className="slide-panel__iframe"
-          title="External Content"
-        />
-      </div>
+      <SalesPage />
     </div>
   );
 };

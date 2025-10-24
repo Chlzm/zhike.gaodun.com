@@ -2,7 +2,12 @@
 #app {
   width: 100%;
   height: 100vh;
-  background: url("./app_bg.png");
+  // background: url("./app_bg.png");
+  background: radial-gradient(
+      121.72% 366.67% at 146.67% 168.28%,
+      #2990df 0%,
+      #000000 100%
+    );
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -13,12 +18,11 @@
 .outline-input__container {
   width: 100%;
   height: 100%;
-  background: radial-gradient(
-      121.72% 366.67% at 146.67% 168.28%,
-      #2990df 0%,
-      #000000 100%
-    )
-    /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
+  // background: radial-gradient(
+  //     121.72% 366.67% at 146.67% 168.28%,
+  //     #2990df 0%,
+  //     #000000 100%
+  //   );
   display: flex;
   flex-direction: column;
   align-items: center;
