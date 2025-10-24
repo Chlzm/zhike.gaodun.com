@@ -13,6 +13,45 @@ const OutlineStream = ({ topic, onConfirm, onBack }: OutlineStreamProps) => {
   const [isStreaming, setIsStreaming] = useState(true);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  // 默认markdown内容
+  const defaultMarkdown = `# ${topic}
+
+## 第一部分：引言
+- 背景介绍
+- 问题阐述
+- 研究目标
+
+## 第二部分：主要内容
+- 核心概念
+- 关键要点
+- 实例分析
+
+## 第三部分：深入探讨
+- 详细分析
+- 案例研究
+- 最佳实践
+
+## 第四部分：总结与展望
+- 主要结论
+- 实际应用
+- 未来发展`;
+
+  // F5键监听
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'p') {
+        event.preventDefault();
+        setIsStreaming(false);
+        setOutline(defaultMarkdown);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [defaultMarkdown]);
+
   // 真实API流式调用
   useEffect(() => {
     callRealStreamingAPI();
