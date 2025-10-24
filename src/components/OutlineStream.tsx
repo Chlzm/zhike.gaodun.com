@@ -121,7 +121,7 @@ const OutlineStream = ({ topic, onConfirm, onBack }: OutlineStreamProps) => {
 
       <div className="outline-stream__container">
         <div className="outline-stream__header">
-          编辑大纲
+          {isStreaming ? '内容生成中...' : '大纲'}
         </div>
 
         <div className="outline-stream__content" ref={contentRef}>
@@ -137,7 +137,7 @@ const OutlineStream = ({ topic, onConfirm, onBack }: OutlineStreamProps) => {
             onClick={onBack}
             style={{ 
               opacity: isStreaming ? 0.4 : 1,
-              pointerEvents: isStreaming ? 'disabled' : 'auto',
+              pointerEvents: isStreaming ? 'none' : 'auto',
               cursor: isStreaming ? 'default' : 'pointer'
             }}
           >
@@ -146,7 +146,7 @@ const OutlineStream = ({ topic, onConfirm, onBack }: OutlineStreamProps) => {
           <div
             style={{ 
               opacity: isStreaming ? 0.4 : 1,
-              pointerEvents: isStreaming ? 'disabled' : 'auto',
+              pointerEvents: isStreaming ? 'none' : 'auto',
               cursor: isStreaming ? 'default' : 'pointer'
             }}
             onClick={() => onConfirm(outline)}
