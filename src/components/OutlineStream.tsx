@@ -28,11 +28,11 @@ const OutlineStream = ({ topic, onConfirm, onBack }: OutlineStreamProps) => {
       const response = await fetch('https://api.coze.cn/v1/workflow/stream_run', {
         method: 'POST',
         headers: {
-          'Authorization': 'Bearer pat_AVqyathK1mrTWzL2I4c262MXn1UDXScwnuMHmYyi2CYiiYyRcrlmvrgJHAHDOKo3',
+          'Authorization': 'Bearer pat_Ixb05xOh3D8wmdKr8ehv1PDohbtpmLFD8LJgJI3s5aMb1vGGBxhb77jfDje6QyDg',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          workflow_id: '7564669913769639982',
+          workflow_id: '7563227177929637903',
           parameters: {
             keyword: topic,
           }
