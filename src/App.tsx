@@ -34,7 +34,7 @@ function App() {
           onBack={handleStreamBack}
         />
       )}
-      {currentStep === 3 && <SlideShow outline={outline} onBack={() => setCurrentStep(2)} />}
+      {currentStep === 3 && <SlideShow outline={outline} onBack={() => window.location.reload()} />}
     </div>
   );
 }
