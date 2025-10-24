@@ -18,9 +18,9 @@ const OutlineInput = ({ onNext }: OutlineInputProps) => {
 
   return (
     <div className="outline-input__container">
-      <h1 className="outline-input__title">创建演示大纲</h1>
+      <h1 className="outline-input__title">AI洞察先机, 发掘热点背后的价值</h1>
       <p className="outline-input__subtitle">
-        输入主题并选择标签,我们将为您生成专业的演示大纲
+        每日自动追踪全网热点,智能分析潜在商机与危机,一键生成高价值决策PPT
       </p>
       <div className="outline-input__input-container">
         <textarea
