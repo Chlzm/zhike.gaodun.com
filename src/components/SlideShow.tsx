@@ -269,31 +269,31 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
             
             /* 控制字体大小 - 更紧凑的布局 */
             .reveal .slides section h1 {
-                font-size: 1.5em !important;
-                margin-bottom: 0.3em !important;
+                font-size: 36px !important;
+                margin-bottom: 8px !important;
             }
             
             .reveal .slides section h2 {
-                font-size: 1.3em !important;
-                margin-bottom: 0.3em !important;
+                font-size: 28px !important;
+                margin-bottom: 6px !important;
             }
             
             .reveal .slides section h3 {
-                font-size: 1.1em !important;
-                margin-bottom: 0.2em !important;
+                font-size: 20px !important;
+                margin-bottom: 4px !important;
             }
             
             .reveal .slides section h4 {
-                font-size: 1em !important;
-                margin-bottom: 0.2em !important;
+                font-size: 18px !important;
+                margin-bottom: 4px !important;
             }
             
             /* 段落和列表项从左往右展示 */
             .reveal .slides section p,
             .reveal .slides section li {
-                font-size: 0.75em !important;
+                font-size: 16px !important;
                 line-height: 1.5 !important;
-                margin-bottom: 0.4em !important;
+                margin-bottom: 8px !important;
                 text-align: left !important;
             }
             
@@ -367,7 +367,7 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
                 <div className="slideshow__global-loading">
                     <div className="slideshow__global-loading-content">
                         <div className="slideshow__global-loading-spinner"></div>
-                        <div className="slideshow__global-loading-text">正在初始化幻灯片...</div>
+                        <div className="slideshow__global-loading-text">正在加载中...</div>
                     </div>
                 </div>
             )}
@@ -604,7 +604,7 @@ const StreamMarkdown = ({ outline, onBack }: SlideShowProps) => {
                                     className={`slideshow__toc-item ${
                                         item.isVertical ? 'slideshow__toc-item--vertical' : ''
                                     } ${
-                                        activeSlide.h === item.h && activeSlide.v === item.v ? 'slideshow__toc-item--active' : ''
+                                        (index + 1) === (activeSlide.h + 1) ? 'slideshow__toc-item--active' : ''
                                     }`}
                                 >
                                     <div className="slideshow__toc-item-number">

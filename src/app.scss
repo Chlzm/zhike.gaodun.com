@@ -644,7 +644,7 @@
   transition: all 0.25s ease;
   color: #e0e0e0;
   background: #3a3a3a;
-  border-left: 3px solid transparent;
+  border: 1px solid transparent;
   flex-direction: row;
 }
 
@@ -654,10 +654,7 @@
 }
 
 .slideshow__toc-item--active {
-  color: #ffffff;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-  border-left-color: #ffffff;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  border-color: #3E729F;
 }
 
 .slideshow__toc-item:hover {
@@ -667,7 +664,7 @@
 }
 
 .slideshow__toc-item--active:hover {
-  background: linear-gradient(90deg, #7b8ff5 0%, #8659ad 100%);
+  border-color: #3E729F;
 }
 
 .slideshow__toc-item-number {
