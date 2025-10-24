@@ -71,8 +71,8 @@ const OutlineInput = ({ onNext }: OutlineInputProps) => {
           </button>
         </div>
         <iframe 
-          src="https://fub647skqd.skywork.website/"
-          // src="www.baidu.com"
+          // src="https://fub647skqd.skywork.website/"
+          src="https://www.baidu.com"
           className="slide-panel__iframe"
           title="External Content"
         />

@@ -4,11 +4,7 @@ import OutlineStream from './components/OutlineStream';
 import SlideShow from './components/SlideShow';
 import './app.scss';
 
-function App() {
-  const [currentStep, setCurrentStep] = useState(3); // 直接显示SlideShow
-  const [topic, setTopic] = useState('');
-  // 提供默认的markdown数据
-  const [outline, setOutline] = useState(`# 人工智能在教育领域的应用
+const defaultMarkdown = `# 人工智能在教育领域的应用
 
 ---
 
@@ -91,7 +87,13 @@ function App() {
 
 ### 问答环节
 
-欢迎提问和讨论`);
+欢迎提问和讨论`
+
+function App() {
+  const [currentStep, setCurrentStep] = useState(1); // 直接显示SlideShow
+  const [topic, setTopic] = useState('');
+  // 提供默认的markdown数据
+  const [outline, setOutline] = useState('');
 
   const handleInputNext = (newTopic: string) => {
     setTopic(newTopic);

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface OutlineStreamProps {
   topic: string;
@@ -10,6 +10,7 @@ interface OutlineStreamProps {
 const OutlineStream = ({ topic, onConfirm, onBack }: OutlineStreamProps) => {
   const [outline, setOutline] = useState('');
   const [isStreaming, setIsStreaming] = useState(true);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // 真实API流式调用
   useEffect(() => {
@@ -89,11 +90,23 @@ const OutlineStream = ({ topic, onConfirm, onBack }: OutlineStreamProps) => {
         if (now - lastUpdateTime > 100) {  // 每100ms更新一次界面
           setOutline(accumulated);
           lastUpdateTime = now;
+          // 自动滚动到底部
+          setTimeout(() => {
+            if (contentRef.current) {
+              contentRef.current.scrollTop = contentRef.current.scrollHeight;
+            }
+          }, 10);
         }
       }
 
       // 确保最后一次更新
       setOutline(accumulated);
+      // 最终滚动到底部
+      setTimeout(() => {
+        if (contentRef.current) {
+          contentRef.current.scrollTop = contentRef.current.scrollHeight;
+        }
+      }, 10);
     } catch (error) {
       console.error('API调用失败:', error);
       setIsStreaming(false);
@@ -110,7 +123,7 @@ const OutlineStream = ({ topic, onConfirm, onBack }: OutlineStreamProps) => {
           编辑大纲
         </div>
 
-        <div className="outline-stream__content">
+        <div className="outline-stream__content" ref={contentRef}>
           {outline}
           {isStreaming && (
             <span className="outline-stream__cursor" />
