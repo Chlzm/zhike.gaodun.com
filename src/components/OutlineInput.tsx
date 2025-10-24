@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SalesPage from './SalesPage';
 
 
@@ -17,6 +17,22 @@ const OutlineInput = ({ onNext }: OutlineInputProps) => {
       onNext(topic, selectedTags);
     }
   };
+
+  // 添加Enter键监听
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        handleNext();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [topic, selectedTags]);
 
   return (
     <div className="outline-input__container">
